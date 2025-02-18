@@ -1,0 +1,40 @@
+version: "3.4"
+services:
+  server:
+#    command: bash
+    build: .
+    image: silentmecha/arma-3-server:latest
+    restart: unless-stopped
+    ports:
+      - ${PORT}:${PORT}/udp
+      - ${QUERYPORT}:${QUERYPORT}/udp
+      - ${MASTERPORT}:${MASTERPORT}/udp
+      - ${VONPORT}:${VONPORT}/udp
+      - ${BEPORT}:${BEPORT}/udp
+    env_file: .env
+    stdin_open: true
+    tty: true
+    volumes:
+      - saved:/home/steam/.local/share/
+      - Mods:/home/steam/Arma3-dedicated/mods
+      - MPMissions:/home/steam/Arma3-dedicated/mpmissions
+      - config:/home/steam/Arma3-dedicated/config
+      - keys:/home/steam/Arma3-dedicated/keys
+  sftp:
+    image: atmoz/sftp
+    restart: unless-stopped
+    volumes:
+      - saved:/home/${SFT_USER}/save
+      - Mods:/home/${SFT_USER}/mods
+      - MPMissions:/home/${SFT_USER}/missions
+      - config:/home/${SFT_USER}/config/
+      - keys:/home/${SFT_USER}/keys/
+    ports:
+      - "${SFT_PORT}:22"
+    command: ${SFT_USER}:${SFT_PASS}:::save
+volumes:
+  saved:
+  Mods:
+  MPMissions:
+  config:
+  keys:
